@@ -1,20 +1,223 @@
 {
-  "mapping_id": "russyn-web-pilot-v1",
-  "description": "Manually checked pilot correspondences; absence means unverified, not unmappable.",
+  "mapping_id": "russyn-web-pilot-v2",
+  "description": "Text-checked pilot correspondences; absence means unverified, not unmappable.",
   "sources": {
-    "russyn": {"archive_sha256": "9af20fe73fff9370acc8fd03cc0ffa718e1cf107d83fc401d41dcadc6c4e4a88"},
-    "web": {"archive_sha256": "a93df5571009fed56f77e3ac1d3ce71c9a3a3df1486f7570cc7a8f823192fdba"}
+    "russyn": {
+      "archive_sha256": "9af20fe73fff9370acc8fd03cc0ffa718e1cf107d83fc401d41dcadc6c4e4a88"
+    },
+    "web": {
+      "archive_sha256": "a93df5571009fed56f77e3ac1d3ce71c9a3a3df1486f7570cc7a8f823192fdba"
+    }
   },
-  "evidence": "Compared the source texts of the listed verses in the two identified archives; these are pilot correspondences, not a complete versification model.",
+  "evidence": "Compared the listed texts in the two source archives. Num 13:1, Jonah 2:1 and Daniel 3:31 were identified with reference to CrossWire JSword Synodal-to-KJV mapping, then compared directly with WEB. Romans 14:24 was checked directly against both source archives; it differs from the KJV target in that candidate mapping.",
   "relationships": [
-    {"russyn": [{"book": "PSA", "chapter": 22, "verse": 1}], "web": [{"book": "PSA", "chapter": 23, "verse": 1}]},
-    {"russyn": [{"book": "PSA", "chapter": 22, "verse": 2}], "web": [{"book": "PSA", "chapter": 23, "verse": 2}]},
-    {"russyn": [{"book": "PSA", "chapter": 22, "verse": 3}], "web": [{"book": "PSA", "chapter": 23, "verse": 3}]},
-    {"russyn": [{"book": "PSA", "chapter": 22, "verse": 4}], "web": [{"book": "PSA", "chapter": 23, "verse": 4}]},
-    {"russyn": [{"book": "PSA", "chapter": 22, "verse": 5}], "web": [{"book": "PSA", "chapter": 23, "verse": 5}]},
-    {"russyn": [{"book": "PSA", "chapter": 22, "verse": 6}], "web": [{"book": "PSA", "chapter": 23, "verse": 6}]},
-    {"russyn": [{"book": "JHN", "chapter": 3, "verse": 16}], "web": [{"book": "JHN", "chapter": 3, "verse": 16}]},
-    {"russyn": [{"book": "JHN", "chapter": 3, "verse": 17}], "web": [{"book": "JHN", "chapter": 3, "verse": 17}]},
-    {"russyn": [{"book": "JHN", "chapter": 3, "verse": 18}], "web": [{"book": "JHN", "chapter": 3, "verse": 18}]}
+    {
+      "russyn": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "web": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 1
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "web": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 2
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "web": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 3
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "web": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 4
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "web": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 5
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "web": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 6
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "web": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 16
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "web": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 17
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "web": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 18
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "web": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 16
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "JON",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "web": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 17
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 31
+        }
+      ],
+      "web": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 1
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "web": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 24
+        }
+      ]
+    }
   ]
 }

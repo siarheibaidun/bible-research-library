@@ -1,6 +1,6 @@
 # Russian Synodal–WEB versification pilot
 
-The pilot records nine explicit correspondences between the two specific source archives: Russian Psalm 22:1–6 ↔ WEB Psalm 23:1–6, and John 3:16–18 in each source. The verse texts in those exact archives were compared to establish the pilot correspondences. The mapping describes corresponding portions, not identical wording or identical textual traditions.
+The pilot records thirteen explicit correspondences between the two specific source archives: Russian Psalm 22:1–6 ↔ WEB Psalm 23:1–6, John 3:16–18 in each source, and the four additional pairs described in [VERSIFICATION_RESEARCH.md](VERSIFICATION_RESEARCH.md). The verse texts in those exact archives were compared to establish the pilot correspondences. The research document records an external candidate and its observed edition-specific limitation. The mapping describes corresponding portions, not identical wording or identical textual traditions.
 
 The mapping is deliberately incomplete. A missing entry means **not yet verified**, not that no equivalent exists. It makes no automatic equal-reference assumption. It is a project pilot rather than a complete independently reviewed versification scheme. Verse boundaries can differ and later relationships may be one-to-many or many-to-many; lists of references are used to accommodate this. The command currently looks up an individual mapped verse only.
 
@@ -16,7 +16,7 @@ Use `--russyn-data` and `--web-data` for other dataset locations. The command ch
 
 ## Research and next validation
 
-CrossWire's [versification identification guide](https://wiki.crosswire.org/Alternate_Versification/System_Identification) documents the need for distinct versification systems, including Synodal. Its [JSword mapper documentation](https://ftp.crosswire.org/jsword/javadoc/org/crosswire/jsword/versification/VersificationsMapper.html) describes many-to-many mappings and the use of KJV as an intermediary. The [Copenhagen Alliance versification specification](https://github.com/Copenhagen-Alliance/versification-specification) also describes source-to-base mapping. These are research references, not the source of the nine pilot entries; no external mapping data was copied.
+CrossWire's [versification identification guide](https://wiki.crosswire.org/Alternate_Versification/System_Identification) documents the need for distinct versification systems, including Synodal. Its [JSword mapper documentation](https://ftp.crosswire.org/jsword/javadoc/org/crosswire/jsword/versification/VersificationsMapper.html) describes many-to-many mappings and the use of KJV as an intermediary. The [Copenhagen Alliance versification specification](https://github.com/Copenhagen-Alliance/versification-specification) also describes source-to-base mapping. These are research references; see the research document for the role of the candidate in identifying three of the added pairs. No external mapping file was copied.
 
 Before extending coverage, identify the versification of these exact editions, assess a suitable authoritative mapping and its license, then test exceptions including headings, omitted verses and split/merged passages against the actual source texts. Record provenance, verification status, and source versions for every mapping; do not fill gaps with automatic same-number matches.
 
