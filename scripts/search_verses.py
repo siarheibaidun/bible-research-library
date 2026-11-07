@@ -4,7 +4,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from lookup_verse import ALIASES, NAMES, normalize
+from lookup_verse import ALIASES, NAMES, RUSSIAN_NAMES, normalize
 
 
 def search(directory, query, book=None, limit=20):
@@ -50,7 +50,8 @@ def main():
         matches, total, manifest = search(args.data, args.query, args.book, args.limit)
         print(f'Showing {len(matches)} of {total} matching verses for {args.query!r}:')
         for code, verse in matches:
-            print(f"{NAMES[code]} {verse['chapter']}:{verse['verse']} — {verse['text']}")
+            name = RUSSIAN_NAMES.get(code, NAMES[code]) if manifest.get('language') == 'ru' else NAMES[code]
+            print(f"{name} {verse['chapter']}:{verse['verse']} — {verse['text']}")
         print(f"\nSource: {manifest.get('edition', 'Unknown edition')}")
         print(f"Archive SHA-256: {manifest.get('archive_sha256', 'unknown')}")
     except (ValueError, KeyError, OSError, json.JSONDecodeError) as exc:

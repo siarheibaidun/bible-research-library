@@ -33,6 +33,31 @@ ALIASES = {normalize(name): code for code, name in NAMES.items()}
 ALIASES.update({normalize(code): code for code in NAMES})
 ALIASES.update({'psalm': 'PSA', 'songofsongs': 'SNG', 'songofsolomon': 'SNG', 'revelations': 'REV'})
 
+# Russian Synodal book names. 1–4 Царств correspond to USFM 1SA–2KI.
+RUSSIAN_NAMES = {
+    'GEN': 'Бытие', 'EXO': 'Исход', 'LEV': 'Левит', 'NUM': 'Числа', 'DEU': 'Второзаконие',
+    'JOS': 'Иисус Навин', 'JDG': 'Судьи', 'RUT': 'Руфь', '1SA': '1 Царств', '2SA': '2 Царств',
+    '1KI': '3 Царств', '2KI': '4 Царств', '1CH': '1 Паралипоменон', '2CH': '2 Паралипоменон',
+    'EZR': 'Ездра', 'NEH': 'Неемия', 'EST': 'Есфирь', 'JOB': 'Иов', 'PSA': 'Псалтирь',
+    'PRO': 'Притчи', 'ECC': 'Екклесиаст', 'SNG': 'Песнь Песней', 'ISA': 'Исаия', 'JER': 'Иеремия',
+    'LAM': 'Плач Иеремии', 'EZK': 'Иезекииль', 'DAN': 'Даниил', 'HOS': 'Осия', 'JOL': 'Иоиль',
+    'AMO': 'Амос', 'OBA': 'Авдий', 'JON': 'Иона', 'MIC': 'Михей', 'NAM': 'Наум', 'HAB': 'Аввакум',
+    'ZEP': 'Софония', 'HAG': 'Аггей', 'ZEC': 'Захария', 'MAL': 'Малахия', 'MAT': 'Матфея',
+    'MRK': 'Марка', 'LUK': 'Луки', 'JHN': 'Иоанна', 'ACT': 'Деяния', 'ROM': 'Римлянам',
+    '1CO': '1 Коринфянам', '2CO': '2 Коринфянам', 'GAL': 'Галатам', 'EPH': 'Ефесянам',
+    'PHP': 'Филиппийцам', 'COL': 'Колоссянам', '1TH': '1 Фессалоникийцам', '2TH': '2 Фессалоникийцам',
+    '1TI': '1 Тимофею', '2TI': '2 Тимофею', 'TIT': 'Титу', 'PHM': 'Филимону', 'HEB': 'Евреям',
+    'JAS': 'Иакова', '1PE': '1 Петра', '2PE': '2 Петра', '1JN': '1 Иоанна', '2JN': '2 Иоанна',
+    '3JN': '3 Иоанна', 'JUD': 'Иуды', 'REV': 'Откровение',
+}
+ALIASES.update({normalize(name): code for code, name in RUSSIAN_NAMES.items()})
+ALIASES.update({normalize(name): code for name, code in {
+    'Псалом': 'PSA', 'Псалмы': 'PSA', 'Пс': 'PSA', 'Ин': 'JHN', 'От Иоанна': 'JHN',
+    'Быт': 'GEN', 'Рим': 'ROM', 'Римлянам': 'ROM', 'Матфей': 'MAT',
+    'Мф': 'MAT', 'Мк': 'MRK', 'Лк': 'LUK', 'Деян': 'ACT',
+}.items()})
+
+
 
 def parse_reference(reference):
     match = re.fullmatch(r'\s*(.+?)\s+(\d+):(\d+)\s*', reference)
@@ -78,7 +103,8 @@ def lookup(directory, reference):
 
 def format_result(result):
     code, chapter, number, verse, book, manifest = result
-    lines = [f'{NAMES[code]} {chapter}:{number}', verse['text'] or '[No verse text in this source.]']
+    name = RUSSIAN_NAMES.get(code, NAMES[code]) if manifest.get('language') == 'ru' else NAMES[code]
+    lines = [f'{name} {chapter}:{number}', verse['text'] or '[No verse text in this source.]']
     for item in verse.get('notes', []):
         title = 'Footnote' if item.get('type') == 'footnote' else 'Cross-reference'
         parsed = read_note(item['raw_usfm'])
