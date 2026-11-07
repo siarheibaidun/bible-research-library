@@ -1,0 +1,223 @@
+{
+  "mapping_id": "russyn-kjv-pilot-v1",
+  "description": "Text-checked pilot correspondences; absence means unverified, not unmappable.",
+  "sources": {
+    "russyn": {
+      "archive_sha256": "9af20fe73fff9370acc8fd03cc0ffa718e1cf107d83fc401d41dcadc6c4e4a88"
+    },
+    "kjv": {
+      "archive_sha256": "069646cd8722f6d57750d3b35d378181f9446dc3abeb81a554fd51b57c928689"
+    }
+  },
+  "evidence": "Source texts were compared for each pilot pair, including KJV Romans 16:25, in the two archives identified by checksum. These are limited pilot relationships, not a complete versification map.",
+  "relationships": [
+    {
+      "russyn": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "kjv": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 1
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "kjv": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 2
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "kjv": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 3
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "kjv": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 4
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "kjv": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 5
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "PSA",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "kjv": [
+        {
+          "book": "PSA",
+          "chapter": 23,
+          "verse": 6
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "kjv": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 16
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "kjv": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 17
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "kjv": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 18
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "NUM",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "kjv": [
+        {
+          "book": "NUM",
+          "chapter": 12,
+          "verse": 16
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "JON",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "kjv": [
+        {
+          "book": "JON",
+          "chapter": 1,
+          "verse": 17
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "DAN",
+          "chapter": 3,
+          "verse": 31
+        }
+      ],
+      "kjv": [
+        {
+          "book": "DAN",
+          "chapter": 4,
+          "verse": 1
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "kjv": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 25
+        }
+      ]
+    }
+  ]
+}
