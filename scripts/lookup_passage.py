@@ -5,7 +5,7 @@ import json
 import re
 import sys
 from pathlib import Path
-from lookup_verse import ALIASES, NAMES, normalize, read_note
+from lookup_verse import ALIASES, NAMES, RUSSIAN_NAMES, normalize, read_note
 
 
 def parse_passage(reference):
@@ -43,7 +43,8 @@ def passage(directory, reference):
 
 def format_passage(result):
     code, chapter, records, book, manifest = result
-    lines = [f'{NAMES[code]} {chapter}']
+    name = RUSSIAN_NAMES.get(code, NAMES[code]) if manifest.get('language') == 'ru' else NAMES[code]
+    lines = [f'{name} {chapter}']
     for verse in records:
         lines.append(f"{verse['verse']}. {verse['text'] or '[No verse text in this source.]'}")
         for note in verse.get('notes', []):
