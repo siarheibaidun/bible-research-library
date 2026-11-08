@@ -20,3 +20,5 @@ Use `--russyn-data` and `--kjv-data` to change dataset paths. The pilot covers 1
 Look up or search the KJV dataset using the existing tools with `--data output/kjv`. Run tests with `python3 -m unittest discover -s tests -v`.
 
 For optional source-mapped Psalm candidates, see [PSALM_SOURCE_MAPPING.md](PSALM_SOURCE_MAPPING.md). They are structurally checked but have not been individually verified against the texts.
+
+For full numbered-verse Psalm coverage, heading comparisons, and edition-specific exceptions, see [PSALMS_COMPARISON.md](PSALMS_COMPARISON.md).

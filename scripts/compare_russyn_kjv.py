@@ -101,10 +101,26 @@ def main():
     parser.add_argument('--from', dest='source', required=True, choices=('russyn', 'kjv'), help='Translation of the input reference')
     parser.add_argument('--russyn-data', type=Path, default=Path('output/russyn'))
     parser.add_argument('--kjv-data', type=Path, default=Path('output/kjv'))
-    parser.add_argument('--source-map', type=Path, help='Optional generated, source-mapped Psalm candidates')
+    map_group = parser.add_mutually_exclusive_group()
+    map_group.add_argument('--source-map', type=Path, help='Optional generated, source-mapped Psalm candidates')
+    map_group.add_argument('--psalm-map', type=Path, help='Generated full Psalm map (default: output/psalms_complete_map.json if present)')
     args = parser.parse_args()
     try:
-        print(format_comparison(compare(args.reference, args.source, args.russyn_data, args.kjv_data, source_map_file=args.source_map)))
+        psalm_map = args.psalm_map or Path('output/psalms_complete_map.json')
+        if args.psalm_map is not None and not psalm_map.is_file():
+            raise ValueError(f'Psalm map not found: {psalm_map}')
+        use_psalm_map = False
+        if args.source_map is None and psalm_map.is_file():
+            import compare_psalms
+            try:
+                compare_psalms.parse_ref(args.reference)
+                use_psalm_map = True
+            except ValueError:
+                pass  # Non-Psalm references use the existing pilot.
+        if use_psalm_map:
+            print(compare_psalms.display(compare_psalms.compare(args.reference, args.source, args.russyn_data, args.kjv_data, psalm_map)))
+        else:
+            print(format_comparison(compare(args.reference, args.source, args.russyn_data, args.kjv_data, source_map_file=args.source_map)))
     except (ValueError, KeyError, OSError, json.JSONDecodeError) as exc:
         print(f'Error: {exc}', file=sys.stderr)
         return 1
