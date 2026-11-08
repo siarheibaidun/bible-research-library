@@ -31,7 +31,7 @@ class KJVTests(unittest.TestCase):
         pair = next(r for r in mapping['relationships'] if r['russyn'] == [{'book': 'ROM', 'chapter': 14, 'verse': 24}])
         self.assertEqual(pair['kjv'], [{'book': 'ROM', 'chapter': 16, 'verse': 25}])
         self.assertEqual(mapping['sources']['kjv']['archive_sha256'], import_kjv_archive.EXPECTED_SHA256)
-        self.assertEqual(len(mapping['relationships']), 13)
+        self.assertEqual(len(mapping['relationships']), 15)
 
 
 if __name__ == '__main__':
