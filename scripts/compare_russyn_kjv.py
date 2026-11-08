@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Compare only explicitly mapped verses between the two reviewed datasets."""
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -33,7 +34,7 @@ def get_verse(path, ref):
     return found[0]
 
 
-def compare(reference, source, russian_dir, kjv_dir, mapping_file=DEFAULT_MAP):
+def compare(reference, source, russian_dir, kjv_dir, mapping_file=DEFAULT_MAP, source_map_file=None):
     code, chapter, verse = parse_reference(reference)
     ref = {'book': code, 'chapter': chapter, 'verse': verse}
     mapping = load_json(mapping_file)
@@ -42,8 +43,26 @@ def compare(reference, source, russian_dir, kjv_dir, mapping_file=DEFAULT_MAP):
     if source not in directories:
         raise ValueError('Source must be russyn or kjv.')
     matches = [entry for entry in mapping['relationships'] if ref in entry[source]]
+    if not matches and source_map_file is not None:
+        candidate_map = load_json(source_map_file)
+        expected_source = '76385bbd47834482c651e509e898d704cf27b5d4037ecff26ec7baf45f1edba6'
+        if candidate_map.get('kind') != 'source_mapped_candidates' or candidate_map.get('evidence', {}).get('sha256') != expected_source:
+            raise ValueError('Unsupported source map or mapping provenance.')
+        if candidate_map.get('pilot_sha256') != hashlib.sha256(mapping_file.read_bytes()).hexdigest():
+            raise ValueError('Source map was generated for a different pilot; rebuild it.')
+        for name, path in directories.items():
+            validate_dataset(path, candidate_map['sources'][name]['archive_sha256'])
+            if candidate_map['sources'][name]['archive_sha256'] != mapping['sources'][name]['archive_sha256']:
+                raise ValueError(f'Source map and pilot disagree on {name} edition.')
+        matches = [entry for entry in candidate_map['relationships'] if ref in entry[source]]
+        if len(matches) == 1:
+            match = matches[0]
+            if match.get('status') != 'source_mapped' or len(match['russyn']) != 1 or len(match['kjv']) != 1:
+                raise ValueError('Invalid source-mapped relationship.')
+            mapping = dict(candidate_map)
+            mapping['selected_evidence'] = {'source_rule': match['source_rule'], 'source_line': match['source_line']}
     if not matches:
-        raise ValueError(f'No reviewed pilot mapping for {reference} in {source}; no automatic match was assumed.')
+        raise ValueError(f'No available mapping for {reference} in {source}; no automatic match was assumed.')
     if len(matches) != 1:
         raise ValueError(f'Ambiguous mapping for {reference} in {source}.')
     result = {}
@@ -54,7 +73,15 @@ def compare(reference, source, russian_dir, kjv_dir, mapping_file=DEFAULT_MAP):
 
 def format_comparison(result):
     mapping, manifests, verses = result
-    lines = [f"Mapping: {mapping['mapping_id']} (limited pilot)"]
+    if mapping.get('kind') == 'source_mapped_candidates':
+        evidence = mapping['evidence']
+        selected = mapping['selected_evidence']
+        lines = [f"Mapping: {mapping['mapping_id']} — source-mapped candidate",
+                 'Status: Structurally checked; text equivalence has not been individually verified.',
+                 f"Evidence: {evidence['name']}, line {selected['source_line']}: {selected['source_rule']}",
+                 f"Mapping source: {evidence['url']}"]
+    else:
+        lines = [f"Mapping: {mapping['mapping_id']} (text-checked pilot)"]
     for source in ('russyn', 'kjv'):
         lines.append(f"\n{manifests[source].get('edition', source)}:")
         names = RUSSIAN_NAMES if source == 'russyn' else NAMES
@@ -74,9 +101,10 @@ def main():
     parser.add_argument('--from', dest='source', required=True, choices=('russyn', 'kjv'), help='Translation of the input reference')
     parser.add_argument('--russyn-data', type=Path, default=Path('output/russyn'))
     parser.add_argument('--kjv-data', type=Path, default=Path('output/kjv'))
+    parser.add_argument('--source-map', type=Path, help='Optional generated, source-mapped Psalm candidates')
     args = parser.parse_args()
     try:
-        print(format_comparison(compare(args.reference, args.source, args.russyn_data, args.kjv_data)))
+        print(format_comparison(compare(args.reference, args.source, args.russyn_data, args.kjv_data, source_map_file=args.source_map)))
     except (ValueError, KeyError, OSError, json.JSONDecodeError) as exc:
         print(f'Error: {exc}', file=sys.stderr)
         return 1

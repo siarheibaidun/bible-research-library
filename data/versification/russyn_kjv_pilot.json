@@ -1,5 +1,5 @@
 {
-  "mapping_id": "russyn-kjv-pilot-v1",
+  "mapping_id": "russyn-kjv-pilot-v2",
   "description": "Text-checked pilot correspondences; absence means unverified, not unmappable.",
   "sources": {
     "russyn": {
@@ -9,7 +9,7 @@
       "archive_sha256": "069646cd8722f6d57750d3b35d378181f9446dc3abeb81a554fd51b57c928689"
     }
   },
-  "evidence": "Source texts were compared for each pilot pair, including KJV Romans 16:25, in the two archives identified by checksum. These are limited pilot relationships, not a complete versification map.",
+  "evidence": "Source texts were compared for each pilot pair, including KJV Romans 16:25, in the two archives identified by checksum. These are limited pilot relationships, not a complete versification map. Two Psalm relationships (12:6 and 89:6) were added after directly comparing the archived source texts; each spans two KJV verses.",
   "relationships": [
     {
       "russyn": [
@@ -216,6 +216,48 @@
           "book": "ROM",
           "chapter": 16,
           "verse": 25
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "PSA",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "kjv": [
+        {
+          "book": "PSA",
+          "chapter": 13,
+          "verse": 5
+        },
+        {
+          "book": "PSA",
+          "chapter": 13,
+          "verse": 6
+        }
+      ]
+    },
+    {
+      "russyn": [
+        {
+          "book": "PSA",
+          "chapter": 89,
+          "verse": 6
+        }
+      ],
+      "kjv": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 5
+        },
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 6
         }
       ]
     }
