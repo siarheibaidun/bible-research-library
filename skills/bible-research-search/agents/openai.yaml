@@ -1,0 +1,13 @@
+interface:
+  display_name: Bible Research Search
+  short_description: Search and compare Russian and KJV Bible passages
+  default_prompt: Use $bible-research-search to find Bible passages and compare translations.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
