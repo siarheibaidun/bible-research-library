@@ -15,6 +15,8 @@ python3 scripts/compare_russyn_kjv.py "Римлянам 14:24" --from russyn
 python3 scripts/compare_russyn_kjv.py "Psalm 23:1" --from kjv
 ```
 
-Use `--russyn-data` and `--kjv-data` to change dataset paths. The pilot covers only 13 checked relationships, including Russian Psalm 22:1–6 / KJV Psalm 23:1–6, John 3:16–18, Numbers 13:1 / 12:16, Jonah 2:1 / 1:17, Daniel 3:31 / 4:1, and Romans 14:24 / 16:25. Missing entries are unverified; the tool does not guess. Source archive checksums in generated manifests are checked, but this does not verify that generated JSON was not altered. Source notes are displayed where available. Further mapping must account for psalm headings and partial or merged verses.
+Use `--russyn-data` and `--kjv-data` to change dataset paths. The pilot covers 15 checked relationships, including Russian Psalm 22:1–6 / KJV Psalm 23:1–6, John 3:16–18, Numbers 13:1 / 12:16, Jonah 2:1 / 1:17, Daniel 3:31 / 4:1, Romans 14:24 / 16:25, and Russian Psalms 12:6 / KJV 13:5–6 and 89:6 / KJV 90:5–6. Missing entries are unverified; the tool does not guess. Source archive checksums in generated manifests are checked, but this does not verify that generated JSON was not altered. Source notes are displayed where available. Further mapping must account for psalm headings and partial or merged verses.
 
 Look up or search the KJV dataset using the existing tools with `--data output/kjv`. Run tests with `python3 -m unittest discover -s tests -v`.
+
+For optional source-mapped Psalm candidates, see [PSALM_SOURCE_MAPPING.md](PSALM_SOURCE_MAPPING.md). They are structurally checked but have not been individually verified against the texts.
