@@ -22,3 +22,5 @@ Look up or search the KJV dataset using the existing tools with `--data output/k
 For optional source-mapped Psalm candidates, see [PSALM_SOURCE_MAPPING.md](PSALM_SOURCE_MAPPING.md). They are structurally checked but have not been individually verified against the texts.
 
 For full numbered-verse Psalm coverage, heading comparisons, and edition-specific exceptions, see [PSALMS_COMPARISON.md](PSALMS_COMPARISON.md).
+
+For comparison across the remaining books, see [BIBLE_COMPARISON.md](BIBLE_COMPARISON.md).
