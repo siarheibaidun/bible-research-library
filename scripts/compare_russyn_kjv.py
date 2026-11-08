@@ -104,13 +104,17 @@ def main():
     map_group = parser.add_mutually_exclusive_group()
     map_group.add_argument('--source-map', type=Path, help='Optional generated, source-mapped Psalm candidates')
     map_group.add_argument('--psalm-map', type=Path, help='Generated full Psalm map (default: output/psalms_complete_map.json if present)')
+    map_group.add_argument('--bible-map', type=Path, help='Generated non-Psalm map (default: output/bible_other_books_map.json if present)')
     args = parser.parse_args()
     try:
         psalm_map = args.psalm_map or Path('output/psalms_complete_map.json')
         if args.psalm_map is not None and not psalm_map.is_file():
             raise ValueError(f'Psalm map not found: {psalm_map}')
+        bible_map = args.bible_map or Path('output/bible_other_books_map.json')
+        if args.bible_map is not None and not bible_map.is_file():
+            raise ValueError(f'Bible map not found: {bible_map}')
         use_psalm_map = False
-        if args.source_map is None and psalm_map.is_file():
+        if args.source_map is None and args.bible_map is None and psalm_map.is_file():
             import compare_psalms
             try:
                 compare_psalms.parse_ref(args.reference)
@@ -119,6 +123,11 @@ def main():
                 pass  # Non-Psalm references use the existing pilot.
         if use_psalm_map:
             print(compare_psalms.display(compare_psalms.compare(args.reference, args.source, args.russyn_data, args.kjv_data, psalm_map)))
+        elif args.bible_map is not None and parse_reference(args.reference)[0] == 'PSA':
+            raise ValueError('The Bible map excludes Psalms; use the Psalm map instead.')
+        elif args.source_map is None and args.psalm_map is None and bible_map.is_file() and parse_reference(args.reference)[0] != 'PSA':
+            import compare_bible
+            print(compare_bible.display(compare_bible.compare(args.reference, args.source, args.russyn_data, args.kjv_data, bible_map)))
         else:
             print(format_comparison(compare(args.reference, args.source, args.russyn_data, args.kjv_data, source_map_file=args.source_map)))
     except (ValueError, KeyError, OSError, json.JSONDecodeError) as exc:
