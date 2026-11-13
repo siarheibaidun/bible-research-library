@@ -27,6 +27,18 @@ For a topical request, choose and search multiple relevant literal word forms, s
 
 When the user does not specify a translation, use the language of their request as the default: Russian Synodal for Russian requests, KJV for English. Search both if comparison is requested. Cite book, chapter, verse and translation for each result. Preserve wording, note-only verses, footnotes, and textual differences; never supply a made-up quote.
 
+## Open-ended Russian question search
+
+For an open-ended question seeking Bible passages, locate the Library file `russian_bible_passages.sqlite3` by name and materialize it using the Library skill. It is a fixed snapshot of the Synodal text.
+
+Analyze the question and generate distinct Russian stems or terms representing its concepts and likely biblical wording, including synonyms. Run:
+
+```bash
+python3 "$SKILL_DIR/scripts/question_search.py" --database "$PASSAGE_DB" --term детей --term отц --term матер --term воспиты --term настав --limit 50
+```
+
+Replace the terms with terms relevant to the current question. Repeat with other concept groups for broad questions. The script retrieves overlapping passages by literal word prefixes and combines rankings; this is AI-assisted query expansion and lexical retrieval, **not an embedding model or semantic-vector index**. Inspect candidates, merge overlaps, and retrieve exact verses and context from `search.py` before answering. Cite sources and distinguish direct from indirect relevance. The approach can miss relevant texts; never claim exhaustive results.
+
 ## Experimental parent–child topic
 
 For a request about relationships between parents and children, use the experimental thematic prototype before supplementing it with literal searches. Run:
