@@ -27,6 +27,16 @@ For a topical request, choose and search multiple relevant literal word forms, s
 
 When the user does not specify a translation, use the language of their request as the default: Russian Synodal for Russian requests, KJV for English. Search both if comparison is requested. Cite book, chapter, verse and translation for each result. Preserve wording, note-only verses, footnotes, and textual differences; never supply a made-up quote.
 
+## Experimental parent–child topic
+
+For a request about relationships between parents and children, use the experimental thematic prototype before supplementing it with literal searches. Run:
+
+```bash
+python3 "$SKILL_DIR/scripts/topic_search.py" --database "$BIBLE_DB" --translation russyn
+```
+
+Use `--translation kjv` for KJV. The result is a curated list of 15 passages grouped by category and fetched from the source text; it is not an exhaustive list or embedding-based semantic search. Use `--candidates` to request additional literal keyword matches for assessment, but never assert that unreviewed lexical candidates are relevant. Inspect surrounding context as necessary and explain indirect parallels, such as a parable or theological analogy. If the user asks for all passages, explicitly acknowledge incompleteness and combine this seed list with additional searches; do not claim completeness.
+
 ## Mapping safety
 
 Display the source reference and mapped target reference separately. The snapshot includes source-mapped relationships, edition-specific overrides, and assumed equal references; most have not been individually checked against both texts. Report the mapping status and qualify uncertain or implicit matches, especially when explaining differences. Multiple relationships may match a KJV verse. A mapped part (`part`) or heading can return the full verse or heading as context; never present that larger text as an exact isolated span. If a relation has no target, is absent or has `counterpart_unresolved`, explicitly report no established counterpart instead of guessing. Psalm heading numbering differs between translations.
