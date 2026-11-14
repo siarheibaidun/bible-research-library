@@ -66,14 +66,18 @@ def build(database,model,tokenizer,output,batch,threads):
   db.execute("INSERT OR REPLACE INTO semantic_metadata VALUES ('original_preprocess','strip_combining_marks_v1')");db.commit()
  t=Tokenizer.from_file(str(tokenizer));t.enable_truncation(max_length=240,stride=32)
  prefix=t.encode('passage: ').ids[1:-1]
+ db.execute("UPDATE semantic_metadata SET value='building' WHERE key='state'");db.commit()
  pending=[]
+ expected_pairs=set()
  completed=set(db.execute('select passage_id,part from semantic_vectors'))
  for pid,text,lang in db.execute('select id,text,translation from semantic_passage order by id'):
   if lang in ('hboWLC','ugnt'):
    text=''.join(c for c in unicodedata.normalize('NFD',text) if not unicodedata.combining(c))
   enc=t.encode('passage: '+text)
+  expected_pairs.add((pid,0))
   if (pid,0) not in completed:pending.append((pid,0,enc.ids))
   for i,sub in enumerate(enc.overflowing,1):
+   expected_pairs.add((pid,i))
    if (pid,i) not in completed:pending.append((pid,i,[sub.ids[0]]+prefix+sub.ids[1:]))
  pending.sort(key=lambda x:len(x[2]))
  opts=ort.SessionOptions();opts.intra_op_num_threads=threads;opts.inter_op_num_threads=1
@@ -85,6 +89,8 @@ def build(database,model,tokenizer,output,batch,threads):
   db.executemany('INSERT INTO semantic_vectors VALUES (?,?,?)',((row[0],row[1],vector.tobytes()) for row,vector in zip(rows,vectors)))
   if i//batch%30==0:
    db.commit();print('encoded',min(i+batch,len(pending)),'/',len(pending),'elapsed_seconds',round(time.monotonic()-start),flush=True)
+ actual=set(db.execute('select passage_id,part from semantic_vectors'))
+ if actual!=expected_pairs:raise ValueError(f'Incomplete vector chunks: missing={len(expected_pairs-actual)}, unexpected={len(actual-expected_pairs)}')
  db.execute("update semantic_metadata set value='complete' where key='state'");db.commit()
  print('counts',db.execute('select translation,count(*) from semantic_passage group by translation').fetchall(),flush=True)
  print('vectors',db.execute('select count(*) from semantic_vectors').fetchone()[0],'integrity',db.execute('pragma integrity_check').fetchone()[0],flush=True)
