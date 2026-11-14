@@ -1,6 +1,6 @@
 ---
 name: bible-research-search
-description: Search the Bible Research Library's complete Russian Synodal and King James Bible text in ChatGPT, locate verses by phrase or topic, retrieve passages, and compare verse references using the project's source-attributed Russian–KJV mappings. Use for Bible verse searches, references, concordance-style lookups, or cross-translation comparison, including Russian and English requests.
+description: Search the Bible Research Library's complete Russian Synodal and King James Bible text in ChatGPT, locate verses by phrase or topic, retrieve passages, and compare verse references using the project's source-attributed Russian–KJV mappings. Use for Bible verse searches, references, concordance-style lookups, or cross-translation comparison, including Russian and English requests. Find and explain Matthew Henry's commentary on Bible verses or topics using the user's indexed English commentary, with Russian–KJV reference mapping.
 ---
 
 # Bible Research Search
@@ -48,6 +48,22 @@ python3 "$SKILL_DIR/scripts/topic_search.py" --database "$BIBLE_DB" --translatio
 ```
 
 Use `--translation kjv` for KJV. The result is a curated list of 15 passages grouped by category and fetched from the source text; it is not an exhaustive list or embedding-based semantic search. Use `--candidates` to request additional literal keyword matches for assessment, but never assert that unreviewed lexical candidates are relevant. Inspect surrounding context as necessary and explain indirect parallels, such as a parable or theological analogy. If the user asks for all passages, explicitly acknowledge incompleteness and combine this seed list with additional searches; do not claim completeness.
+
+## Matthew Henry commentary
+
+For requests for Matthew Henry's interpretation or searches within his commentary, use the user's Library file named `matthew_henry_commentary.sqlite3`. Locate and materialize the intended latest file via the Library skill, following its transfer and metadata workflow. Do not hard-code or publish private Library file identifiers. Reuse a suitable local copy only if verified in the current session. If inaccessible, state that you could not consult the user's commentary dataset; do not pretend another source or memory is this dataset.
+
+Run the bundled script with Python 3 and the materialized database path. Convert a requested Bible book to its USFM code (e.g. `PSA`, `JHN`, `GEN`, `1SA`). Use the reference and translation the user actually gave; default to Russian Synodal for Russian-language verse requests. For a range, query each verse, deduplicate commentary fragment IDs, and do not assume a fragment only covers the requested verse.
+
+```bash
+python3 "$SKILL_DIR/scripts/commentary_search.py" --database "$MHC_DB" verse --translation russyn --book PSA --chapter 22 --verse 1
+python3 "$SKILL_DIR/scripts/commentary_search.py" --database "$MHC_DB" verse --translation kjv --book JHN --chapter 3 --verse 16
+python3 "$SKILL_DIR/scripts/commentary_search.py" --database "$MHC_DB" search 'shepherd' --limit 10
+```
+
+The commentary is English. Explain it in the user's language or translate relevant portions as requested, distinguishing translation or summary from quotation. Cite Matthew Henry, the KJV passage covered by each fragment, and the requested Russian reference when applicable. For Russian references, use only the database's explicit mapping; show differing KJV references and mention uncertain, partial, or assumed matches. Missing mapping, headings and entries have no automatically inferred commentary. The four KJV verses JOS 18:1, 1SA 25:1, 2SA 22:1 and PRO 11:20 have empty index entries. A fragment can cover multiple verses; internal cross-references are not the fragment's own coverage.
+
+A `verse` result defaults to the first 12,000 characters of a potentially long fragment; inspect `truncated` and increase `--max-chars` (up to 2,000,000) before claiming a full reading. For topical requests, translate concepts into multiple appropriate **English** search terms and use `search` for lexical FTS5 phrase matches. Results contain snippets and KJV verse links; inspect full matching commentary with `verse` before drawing conclusions. The search is not semantic and is not exhaustive. Never claim the commentary dataset contains Bible translations other than the author's embedded KJV excerpts, or that the comments are the biblical text itself. The source declares Public Domain and identifies MHC version 2.2.
 
 ## Mapping safety
 
