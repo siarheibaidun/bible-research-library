@@ -1,6 +1,6 @@
 ---
 name: bible-research-search
-description: Search the Bible Research Library's complete Russian Synodal and King James Bible text in ChatGPT, locate verses by phrase or topic, retrieve passages, and compare verse references using the project's source-attributed Russian–KJV mappings. Use for Bible verse searches, references, concordance-style lookups, or cross-translation comparison, including Russian and English requests. Find and explain Matthew Henry's commentary on Bible verses or topics using the user's indexed English commentary, with Russian–KJV reference mapping.
+description: Search the Bible Research Library's complete Russian Synodal and King James Bible text in ChatGPT, locate verses by phrase or topic, retrieve passages, and compare verse references using the project's source-attributed Russian–KJV mappings. Use for Bible verse searches, references, concordance-style lookups, or cross-translation comparison, including Russian and English requests. Find and explain Matthew Henry's commentary. Search the Hebrew/Aramaic WLC Old Testament, Greek UGNT New Testament, and Dutch Bible of 1917 with source-attributed candidate mappings and word annotations.
 ---
 
 # Bible Research Search
@@ -48,6 +48,23 @@ python3 "$SKILL_DIR/scripts/topic_search.py" --database "$BIBLE_DB" --translatio
 ```
 
 Use `--translation kjv` for KJV. The result is a curated list of 15 passages grouped by category and fetched from the source text; it is not an exhaustive list or embedding-based semantic search. Use `--candidates` to request additional literal keyword matches for assessment, but never assert that unreviewed lexical candidates are relevant. Inspect surrounding context as necessary and explain indirect parallels, such as a parable or theological analogy. If the user asks for all passages, explicitly acknowledge incompleteness and combine this seed list with additional searches; do not claim completeness.
+
+## Hebrew, Greek and Dutch 1917
+
+For original-language texts or Dutch 1917, use the user's Library file `originals_dutch.sqlite3`. Locate and materialize the intended latest file via the Library skill; do not hard-code or publish private Library file identifiers; reuse a local file only if verified in this session. These are snapshots: Hebrew/Aramaic Westminster Leningrad Codex `hboWLC` (39 OT books), unfoldingWord Greek New Testament v0.34 `ugnt` (27 NT books), and Dutch *De Heilige Schrift 1917* `nld1917` (66 books). The Dutch source is an older translation, not HSV or NBV21. Identify the source of every quote. If inaccessible, say so rather than relying on memory.
+
+Run the bundled script, converting book names to USFM codes:
+
+```bash
+python3 "$SKILL_DIR/scripts/original_search.py" --database "$ORIGINAL_DB" verse --source hboWLC --book GEN --chapter 1 --verse 1 --tokens
+python3 "$SKILL_DIR/scripts/original_search.py" --database "$ORIGINAL_DB" verse --source ugnt --book JHN --chapter 1 --verse 1 --tokens
+python3 "$SKILL_DIR/scripts/original_search.py" --database "$ORIGINAL_DB" search --source ugnt 'λογος' --limit 20
+python3 "$SKILL_DIR/scripts/original_search.py" --database "$ORIGINAL_DB" cross --bible-database "$BIBLE_DB" --from-translation russyn --book PSA --chapter 22 --verse 1
+```
+
+`verse` returns text and KJV candidate links; `--tokens` returns original word annotations including source Strong numbers, morphology and Greek lemmas when present. Describe morphological values as source-provided and explain uncertainty; Strong IDs alone do not prove word meanings. `search` uses case- and diacritic-insensitive literal substring matching in verse text, not lemma, morphological or semantic search. Try alternative word forms and inspect context. `cross` composes candidate mappings through the existing Russian–KJV index and therefore needs both databases materialized. For ranges, query each verse and deduplicate results. Check source and KJV references and part/heading indicators; there is no automatic word alignment.
+
+Hebrew→KJV uses published CrossWire Leningrad rules with fallback same-reference candidates; Greek and Dutch→KJV links are reference-only candidates. None of these links individually establishes equivalent wording. For partial or merged verses, return full text only as context and flag scope. Never infer an unmapped correspondence. UGNT 3 John 1:15 and Revelation 12:18 currently have no established KJV link. Source versions, rule text, license notices and hashes are recorded in the database. Original WLC text is public domain and its morphological annotations are CC BY-SA 3.0; UGNT is CC BY-SA 4.0; the Dutch source declares public domain. Preserve source attribution and applicable license terms when sharing or adapting material.
 
 ## Matthew Henry commentary
 

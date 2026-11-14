@@ -1,7 +1,7 @@
 interface:
   display_name: Bible Research Search
-  short_description: Search Bible passages and Matthew Henry commentary
-  default_prompt: Use $bible-research-search to find Bible passages, compare translations, and explore Matthew Henry commentary.
+  short_description: Search Bible texts, originals and commentary
+  default_prompt: Use $bible-research-search to explore Bible translations, original texts, and Matthew Henry commentary.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:
