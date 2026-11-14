@@ -1,11 +1,11 @@
 ---
 name: bible-research-search
-description: Search the Bible Research Library's complete Russian Synodal and King James Bible text in ChatGPT, locate verses by phrase or topic, retrieve passages, and compare verse references using the project's source-attributed Russian–KJV mappings. Use for Bible verse searches, references, concordance-style lookups, or cross-translation comparison, including Russian and English requests. Find and explain Matthew Henry's commentary. Search the Hebrew/Aramaic WLC Old Testament, Greek UGNT New Testament, and Dutch Bible of 1917 with source-attributed candidate mappings and word annotations.
+description: Search Bible texts and answer topical questions in Russian, English or Dutch; retrieve and compare Russian Synodal, KJV, Dutch 1917, Hebrew/Aramaic WLC and Greek UGNT using source-attributed verse mappings and morphology. Find and explain Matthew Henry commentary.
 ---
 
 # Bible Research Search
 
-Use the indexed Bible Research Library snapshot to answer from actual source texts rather than memory. The index contains the user's Russian Synodal (`russyn`) and KJV (`kjv`) editions and their Psalms and whole-Bible reference mappings. It is a snapshot, not a live index: do not claim later repository changes are included. The source/mapping metadata in script output describes the underlying editions and checksums.
+Use the indexed Bible Research Library snapshot to answer from actual source texts rather than memory. The unified index contains Russian Synodal, KJV, Dutch 1917, Hebrew/Aramaic WLC and Greek UGNT, source metadata, morphology and reference mappings. It also contains the passage indexes for Russian, English and Dutch. It is a snapshot, not a live index: do not claim later repository changes are included. The source/mapping metadata in script output describes the underlying editions and checksums.
 
 ## Obtain the database
 
@@ -21,23 +21,28 @@ python3 "$SKILL_DIR/scripts/search.py" --database "$BIBLE_DB" search 'love' --tr
 python3 "$SKILL_DIR/scripts/search.py" --database "$BIBLE_DB" verse 'Псалом 86:2' --translation russyn --parallel
 ```
 
-`search` searches numbered verses across every book by case-insensitive literal substring; it does not search notes, stem words, handle spelling variants, or perform semantic search. It returns the total and paginated results; use `--offset` and `--limit` (maximum 100) to retrieve additional results. Scope `--book` accepts English or supported Russian names. `verse` retrieves one reference and `--parallel` returns the mapping relationships and source notes. For a passage, retrieve each requested verse in order; do not invent unreturned text. Psalm heading references use verse `0` and are not numbered Scripture verses. No other translation is indexed.
+`search` searches numbered verses across every book by case-insensitive literal substring; it does not search notes, stem words, handle spelling variants, or perform semantic search. It returns the total and paginated results; use `--offset` and `--limit` (maximum 100) to retrieve additional results. Scope `--book` accepts English or supported Russian names. `verse` retrieves one reference and `--parallel` returns the mapping relationships and source notes. For a passage, retrieve each requested verse in order; do not invent unreturned text. Psalm heading references use verse `0` and are not numbered Scripture verses. This legacy command searches Russian and KJV; use the unified command below for the other editions.
 
 For a topical request, choose and search multiple relevant literal word forms, synonyms, and languages when useful. Apply contextual judgment to the actual returned text. Clearly distinguish a selected set of relevant passages from an exhaustive word search; do not assert exhaustive conceptual coverage. For an exact phrase, report the search's translation, literal matching, total and any truncation. If spelling, punctuation or inflection may affect the answer, say so and perform sensible alternate searches.
 
 When the user does not specify a translation, use the language of their request as the default: Russian Synodal for Russian requests, KJV for English. Search both if comparison is requested. Cite book, chapter, verse and translation for each result. Preserve wording, note-only verses, footnotes, and textual differences; never supply a made-up quote.
 
-## Open-ended Russian question search
+## Unified search and comparisons
 
-For an open-ended question seeking Bible passages, locate the Library file `russian_bible_passages.sqlite3` by name and materialize it using the Library skill. It is a fixed snapshot of the Synodal text.
-
-Analyze the question and generate distinct Russian stems or terms representing its concepts and likely biblical wording, including synonyms. Run:
+Use the one materialized `$BIBLE_DB` for all Bible texts, mappings, morphology and passage indexes. Identify the user's reference language and source translation. Russian defaults to Synodal, English to KJV, Dutch to Dutch 1917; ask only if the reference is ambiguous. The Dutch source is an old 1917 text, not HSV or NBV21. Convert book names from Russian, English or Dutch, or use USFM book codes.
 
 ```bash
-python3 "$SKILL_DIR/scripts/question_search.py" --database "$PASSAGE_DB" --term детей --term отц --term матер --term воспиты --term настав --limit 50
+python3 "$SKILL_DIR/scripts/unified_search.py" --database "$BIBLE_DB" compare --from russyn --book Псалом --chapter 22 --verse 1 --to nld1917 --to hboWLC
+python3 "$SKILL_DIR/scripts/unified_search.py" --database "$BIBLE_DB" compare --from ugnt --book Johannes --chapter 1 --verse 1 --to russyn --to kjv --to nld1917 --tokens
+python3 "$SKILL_DIR/scripts/unified_search.py" --database "$BIBLE_DB" search --translation nld1917 'liefde' --limit 20
+python3 "$SKILL_DIR/scripts/unified_search.py" --database "$BIBLE_DB" topic --ru-term любов --en-term love --nl-term liefde --limit 50
 ```
 
-Replace the terms with terms relevant to the current question. Repeat with other concept groups for broad questions. The script retrieves overlapping passages by literal word prefixes and combines rankings; this is AI-assisted query expansion and lexical retrieval, **not an embedding model or semantic-vector index**. Inspect candidates, merge overlaps, and retrieve exact verses and context from `search.py` before answering. Cite sources and distinguish direct from indirect relevance. The approach can miss relevant texts; never claim exhaustive results.
+`compare` navigates **from any included edition to any other** through explicit KJV anchors. Show source and mapped references, inspect all paths, and preserve mapping status, KJV parts and evidence. A different canon, an unrepresented book, or an unresolved reference yields no result; never fill it from memory or guess the same number. WLC published-rule links and equal-reference links are candidates, not universal verse equivalences. Parts and headings can return a full verse for context, and compositions may over-include material; no word-level alignment is implied. For 3 John 1:14 the script filters disjoint checked opening/closing parts. UGNT Revelation 12:18 ↔ KJV 13:1 opening is partial and has a textual variant (he stood vs I stood). In a range, query each verse and deduplicate. `--tokens` supplies Strong identifiers, morphology and Greek lemmas as provided by the source; do not equate a Strong number with a proven meaning.
+
+`search` is literal substring matching within one selected edition; spelling and inflection matter, and Hebrew/Greek/Dutch searches ignore diacritics. For open-ended topical questions in **Russian, English, or Dutch**, analyze the question in its context, formulate several relevant stems and synonyms, and if looking across languages translate the concepts into all three languages. Pass these yourself via repeated `--ru-term`, `--en-term`, `--nl-term`; the script does not translate queries. `topic` uses lexical prefix retrieval over overlapping passages and rank fusion, not embeddings or semantic search. It may miss relevant verses or retrieve irrelevant ones. Evaluate actual text, inspect surrounding context and precise verse references, distinguish direct vs indirect connections, and do not claim completeness. Source and target links are preserved; output passages should cite their translation.
+
+The legacy `search.py` and `question_search.py` remain supported with `$BIBLE_DB`; the latter is Russian-only and uses its embedded four-verse passage index.
 
 ## Experimental parent–child topic
 
@@ -49,22 +54,9 @@ python3 "$SKILL_DIR/scripts/topic_search.py" --database "$BIBLE_DB" --translatio
 
 Use `--translation kjv` for KJV. The result is a curated list of 15 passages grouped by category and fetched from the source text; it is not an exhaustive list or embedding-based semantic search. Use `--candidates` to request additional literal keyword matches for assessment, but never assert that unreviewed lexical candidates are relevant. Inspect surrounding context as necessary and explain indirect parallels, such as a parable or theological analogy. If the user asks for all passages, explicitly acknowledge incompleteness and combine this seed list with additional searches; do not claim completeness.
 
-## Hebrew, Greek and Dutch 1917
+## Source-text and Dutch edition notes
 
-For original-language texts or Dutch 1917, use the user's Library file `originals_dutch.sqlite3`. Locate and materialize the intended latest file via the Library skill; do not hard-code or publish private Library file identifiers; reuse a local file only if verified in this session. These are snapshots: Hebrew/Aramaic Westminster Leningrad Codex `hboWLC` (39 OT books), unfoldingWord Greek New Testament v0.34 `ugnt` (27 NT books), and Dutch *De Heilige Schrift 1917* `nld1917` (66 books). The Dutch source is an older translation, not HSV or NBV21. Identify the source of every quote. If inaccessible, say so rather than relying on memory.
-
-Run the bundled script, converting book names to USFM codes:
-
-```bash
-python3 "$SKILL_DIR/scripts/original_search.py" --database "$ORIGINAL_DB" verse --source hboWLC --book GEN --chapter 1 --verse 1 --tokens
-python3 "$SKILL_DIR/scripts/original_search.py" --database "$ORIGINAL_DB" verse --source ugnt --book JHN --chapter 1 --verse 1 --tokens
-python3 "$SKILL_DIR/scripts/original_search.py" --database "$ORIGINAL_DB" search --source ugnt 'λογος' --limit 20
-python3 "$SKILL_DIR/scripts/original_search.py" --database "$ORIGINAL_DB" cross --bible-database "$BIBLE_DB" --from-translation russyn --book PSA --chapter 22 --verse 1
-```
-
-`verse` returns text and KJV candidate links; `--tokens` returns original word annotations including source Strong numbers, morphology and Greek lemmas when present. Describe morphological values as source-provided and explain uncertainty; Strong IDs alone do not prove word meanings. `search` uses case- and diacritic-insensitive literal substring matching in verse text, not lemma, morphological or semantic search. Try alternative word forms and inspect context. `cross` composes candidate mappings through the existing Russian–KJV index and therefore needs both databases materialized. For ranges, query each verse and deduplicate results. Check source and KJV references and part/heading indicators; there is no automatic word alignment.
-
-Hebrew→KJV uses published CrossWire Leningrad rules with fallback same-reference candidates; Greek and Dutch→KJV links are reference-only candidates. None of these links individually establishes equivalent wording. For partial or merged verses, return full text only as context and flag scope. Never infer an unmapped correspondence. UGNT 3 John 1:15 and Revelation 12:18 currently have no established KJV link. Source versions, rule text, license notices and hashes are recorded in the database. Original WLC text is public domain and its morphological annotations are CC BY-SA 3.0; UGNT is CC BY-SA 4.0; the Dutch source declares public domain. Preserve source attribution and applicable license terms when sharing or adapting material.
+The unified file contains Hebrew/Aramaic WLC (39 Old Testament books), Greek UGNT v0.34 (27 New Testament books), and Dutch *De Heilige Schrift 1917* (66 books). Their source versions, license notices, USFM, source annotations and mapping provenance are preserved. WLC text is public domain and its annotations use CC BY-SA 3.0; UGNT uses CC BY-SA 4.0; the Dutch source declares public domain. Preserve attribution and applicable license terms when sharing or adapting material. Search these editions with the unified commands above. The legacy `original_search.py` can also use `$BIBLE_DB` for both `--database` and `--bible-database`.
 
 ## Matthew Henry commentary
 
