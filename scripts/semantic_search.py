@@ -46,7 +46,7 @@ def dependencies(db,cache):
  return np,ort,Tokenizer
 
 def engine(db):
- if platform.system()!='Linux' or platform.machine().lower() not in ('x86_64','amd64'):raise RuntimeError('The bundled semantic model runtime currently requires Linux x86-64')
+ if platform.system()!='Linux' or platform.machine().lower() not in ('x86_64','amd64') or sys.version_info[:2]!=(3,12):raise RuntimeError('The bundled semantic runtime requires Python 3.12 on Linux x86-64')
  try:flags=Path('/proc/cpuinfo').read_text().lower()
  except OSError:flags=''
  if 'avx512_vnni' not in flags:raise RuntimeError('The bundled quantized model requires AVX-512 VNNI; use a compatible runtime or a portable model build')
@@ -56,7 +56,18 @@ def engine(db):
  with (cache/'setup.lock').open('a') as lock:
   fcntl.flock(lock,fcntl.LOCK_EX)
   np,ort,Tokenizer=dependencies(db,cache)
-  model=get_asset(db,'model.onnx',cache/'model.onnx');tokenizer=get_asset(db,'tokenizer.json',cache/'tokenizer.json')
+  model=cache/'model.onnx'
+  if not model.exists() or digest(model)!=m['model_sha256']:
+   if db.execute("select 1 from semantic_assets where name='model.onnx.zip'").fetchone():
+    archive=get_asset(db,'model.onnx.zip',cache/'model.onnx.zip')
+    with zipfile.ZipFile(archive) as z:
+     if z.namelist()!=['model.onnx']:raise ValueError('Invalid model archive')
+     tmp=cache/'model.onnx.tmp'
+     with z.open('model.onnx') as src,tmp.open('wb') as dst:shutil.copyfileobj(src,dst,1024*1024)
+     if digest(tmp)!=m['model_sha256']:tmp.unlink(missing_ok=True);raise ValueError('Corrupt decompressed model')
+     os.replace(tmp,model)
+   else:model=get_asset(db,'model.onnx',model)
+  tokenizer=get_asset(db,'tokenizer.json',cache/'tokenizer.json')
  if digest(model)!=m['model_sha256'] or digest(tokenizer)!=m['tokenizer_sha256']:raise ValueError('Embedding model and index do not match')
  t=Tokenizer.from_file(str(tokenizer));t.enable_truncation(max_length=240)
  opts=ort.SessionOptions();opts.intra_op_num_threads=4;opts.inter_op_num_threads=1
@@ -74,6 +85,7 @@ def search(db,question,languages,limit,terms):
  placeholders=','.join('?' for _ in languages)
  rows=db.execute(f'''SELECT v.passage_id,v.vector FROM semantic_vectors v JOIN semantic_passage p ON p.id=v.passage_id WHERE p.translation IN ({placeholders}) ORDER BY v.passage_id,v.part''',languages).fetchall()
  if not rows:return {'results':[],'warning':'No vector passages in selected sources'}
+ if any(len(r[1]) not in (768,1536) for r in rows):raise ValueError('Invalid semantic vector dimensions')
  matrix=np.vstack([np.frombuffer(r[1],dtype=('<f2' if len(r[1])==768 else '<f4')).astype('float32') for r in rows]);scores=matrix@q
  # Aggregate multiple token chunks by highest similarity for each passage.
  best={}
