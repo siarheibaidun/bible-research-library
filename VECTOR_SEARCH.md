@@ -22,7 +22,7 @@ The self-contained unified SQLite contains vectors, passage provenance, the infe
 
 ## Rebuild
 
-Generate `vectors.sqlite3` from the exact unified Bible snapshot using the pinned model files. The builder checks SHA-256, tracks source checksums and can resume by passage/chunk. Long passages are split with overlap, and all content remains in the original verse index. `merge_vector_index.py` checks source identity, integrity, vector shape, existing passage IDs and verse coverage before creating a new database. The model and wheel assets should be obtained from their respective maintainers and their licenses retained. No model weights or generated datasets belong in this Git repository.
+Generate `vectors.sqlite3` from the exact unified Bible snapshot using the pinned model files. The builder checks SHA-256, tracks source checksums and can resume by passage/chunk. Long passages are split with overlap, and all content remains in the original verse index. `merge_vector_index.py` checks source identity, integrity, vector shape, existing passage IDs and verse coverage before creating a new database. The model archive must contain the checked ONNX model as `model.onnx`. The model and wheel assets should be obtained from their respective maintainers and their licenses retained. No model weights or generated datasets belong in this Git repository.
 
 ```sh
 python3 scripts/build_vector_index.py --database /path/to/unified.sqlite3 \
@@ -30,7 +30,7 @@ python3 scripts/build_vector_index.py --database /path/to/unified.sqlite3 \
  --output /path/to/vectors.sqlite3 --threads 4
 python3 scripts/merge_vector_index.py --bible /path/to/unified.sqlite3 \
  --vectors /path/to/vectors.sqlite3 --model /path/to/model_qint8_avx512_vnni.onnx \
- --tokenizer /path/to/tokenizer.json --wheels /path/to/runtime_wheels.zip \
+ --model-archive /path/to/model.onnx.zip --tokenizer /path/to/tokenizer.json --wheels /path/to/runtime_wheels.zip \
  --model-license licenses/E5_MODEL_LICENSE.txt --output /path/to/bible-with-vectors.sqlite3
 ```
 
