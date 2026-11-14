@@ -1,7 +1,7 @@
 interface:
   display_name: Bible Research Search
-  short_description: Search and compare Russian and KJV Bible passages
-  default_prompt: Use $bible-research-search to find Bible passages and compare translations.
+  short_description: Search Bible passages and Matthew Henry commentary
+  default_prompt: Use $bible-research-search to find Bible passages, compare translations, and explore Matthew Henry commentary.
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:
