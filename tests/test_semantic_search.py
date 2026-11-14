@@ -32,6 +32,9 @@ class CrossLanguageTests(unittest.TestCase):
    with self.subTest(query=query):
     r=s.search(self.db,query,[edition],50,[])
     self.assertTrue(any(x['book'] in ('EPH','COL','PRO') and x['chapter'] in (6,3,22) for x in r['results']))
+ def test_second_topic(self):
+  r=s.search(self.db,'How should we treat our enemies?',['kjv'],50,[])
+  self.assertTrue(any((x['book'],x['chapter']) in (('MAT',5),('LUK',6),('ROM',12)) for x in r['results']))
  def test_cross_lingual_query(self):
   r=s.search(self.db,'Hoe moeten ouders hun kinderen opvoeden?',['russyn'],50,[])
   self.assertTrue(any(x['book'] in ('EPH','COL','PRO') and x['chapter'] in (6,3,22) for x in r['results']))
