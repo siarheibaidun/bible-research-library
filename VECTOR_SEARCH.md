@@ -1,6 +1,6 @@
 # Multilingual vector Bible search
 
-The semantic index embeds overlapping passage windows from all five editions in the unified Bible snapshot: Russian Synodal, King James, Dutch 1917, Hebrew/Aramaic WLC and Greek UGNT. The model is `intfloat/multilingual-e5-small` at revision `614241f622f53c4eeff9890bdc4f31cfecc418b3` (MIT), using the publisher's 384-dimensional quantized ONNX variant. Text is embedded with `passage: ` and questions with `query: `, mean pooling and L2 normalization. The optional lexical prefix candidates are fused with semantic ranks; exact word search remains available separately.
+The semantic index embeds overlapping passage windows from all five editions in the unified Bible snapshot: Russian Synodal, King James, Dutch 1917, Hebrew/Aramaic WLC and Greek UGNT. The model is `intfloat/multilingual-e5-small` at revision `614241f622f53c4eeff9890bdc4f31cfecc418b3` (MIT), using the publisher's 384-dimensional quantized ONNX variant. Text is embedded with `passage: ` and questions with `query: `, mean pooling and L2 normalization. Vectors are stored as float16 and evaluated in float32. The optional lexical prefix candidates are fused with semantic ranks; exact word search remains available separately.
 
 Greek and Hebrew combining marks are removed **only for embedding**; the stored text and morphology are unchanged. Biblical Hebrew/Aramaic and Koine Greek retrieval quality is not independently established by the model's modern-language training. A similarity score is not a probability or theological judgment. Interpret and verify retrieved passages in context. Vector, keyword and multilingual retrieval are not exhaustive and cannot guarantee that every relevant passage is found.
 
@@ -31,7 +31,7 @@ python3 scripts/build_vector_index.py --database /path/to/unified.sqlite3 \
 python3 scripts/merge_vector_index.py --bible /path/to/unified.sqlite3 \
  --vectors /path/to/vectors.sqlite3 --model /path/to/model_qint8_avx512_vnni.onnx \
  --tokenizer /path/to/tokenizer.json --wheels /path/to/runtime_wheels.zip \
- --output /path/to/bible-with-vectors.sqlite3
+ --model-license licenses/E5_MODEL_LICENSE.txt --output /path/to/bible-with-vectors.sqlite3
 ```
 
 The reviewed model ONNX SHA-256 is `dd476dd0c2514e9b9be83aeb3853fac0763e0bdf4a71645407587d77c48a2d88`; tokenizer SHA-256 is `0b44a9d7b51c3c62626640cda0e2c2f70fdacdc25bbbd68038369d14ebdf4c39`. Both are from the model's `onnx/` directory. Standard dependency versions and the platform-specific wheel filenames are recorded in the embedded wheel archive. Python wheel availability and dependency support may change.
