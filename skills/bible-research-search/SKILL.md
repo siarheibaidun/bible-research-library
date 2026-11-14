@@ -1,11 +1,11 @@
 ---
 name: bible-research-search
-description: Search Bible texts and answer topical questions in Russian, English or Dutch; retrieve and compare Russian Synodal, KJV, Dutch 1917, Hebrew/Aramaic WLC and Greek UGNT using source-attributed verse mappings and morphology. Find and explain Matthew Henry commentary.
+description: Use multilingual vector and lexical search to answer Bible questions in Russian, English or Dutch; retrieve and compare Russian Synodal, KJV, Dutch 1917, Hebrew/Aramaic WLC and Greek UGNT using source-attributed verse mappings and morphology. Find and explain Matthew Henry commentary.
 ---
 
 # Bible Research Search
 
-Use the indexed Bible Research Library snapshot to answer from actual source texts rather than memory. The unified index contains Russian Synodal, KJV, Dutch 1917, Hebrew/Aramaic WLC and Greek UGNT, source metadata, morphology and reference mappings. It also contains the passage indexes for Russian, English and Dutch. It is a snapshot, not a live index: do not claim later repository changes are included. The source/mapping metadata in script output describes the underlying editions and checksums.
+Use the indexed Bible Research Library snapshot to answer from actual source texts rather than memory. The unified index contains Russian Synodal, KJV, Dutch 1917, Hebrew/Aramaic WLC and Greek UGNT, source metadata, morphology and reference mappings. It also contains a multilingual vector index over all five editions, with Russian, English and Dutch lexical passage indexes. It is a snapshot, not a live index: do not claim later repository changes are included. The source/mapping metadata in script output describes the underlying editions and checksums.
 
 ## Obtain the database
 
@@ -27,6 +27,22 @@ For a topical request, choose and search multiple relevant literal word forms, s
 
 When the user does not specify a translation, use the language of their request as the default: Russian Synodal for Russian requests, KJV for English. Search both if comparison is requested. Cite book, chapter, verse and translation for each result. Preserve wording, note-only verses, footnotes, and textual differences; never supply a made-up quote.
 
+## Multilingual semantic search
+
+For open-ended questions or finding Bible passages by meaning, use the vector index in `$BIBLE_DB` first; this is an actual multilingual E5 dense-vector index over overlapping passage windows from all indexed books in all five editions. The model and runtime wheels are stored in the same database. Run:
+
+```bash
+python3 "$SKILL_DIR/scripts/semantic_search.py" --database "$BIBLE_DB" 'Как родителям воспитывать детей?' --translation russyn --ru-term родител --ru-term детей --limit 50
+python3 "$SKILL_DIR/scripts/semantic_search.py" --database "$BIBLE_DB" 'How should parents care for their children?' --translation nld1917 --limit 50
+python3 "$SKILL_DIR/scripts/semantic_search.py" --database "$BIBLE_DB" 'Hoe vind je troost in verdriet?' --translation kjv --limit 50
+```
+
+Supply the user's question in its original language; the multilingual model embeds it directly, including when the selected text is in a different language. Choose the edition(s) requested; absent a preference use Russian Synodal for Russian, KJV for English and Dutch 1917 for Dutch. For a comparison across multiple editions, search each edition separately, then use `unified_search.py compare` to map references and inspect their scope. Optional individual `--ru-term`, `--en-term`, `--nl-term` prefixes add lexical rank fusion; choose synonyms in the language of the selected text. Without these options retrieval is vector-only. Exact wording, quotations and exhaustive literal counts still require `unified_search.py search` or `search.py`.
+
+Inspect returned passages and surrounding verses before answering, deduplicate overlaps, cite edition and references, distinguish direct references from analogies, and never claim semantic results are exhaustive. Similarity is not proof of relevance. The Hebrew and Greek original-language vectors use unaccented input while stored text remains unchanged; retrieval quality for Biblical Hebrew, Aramaic and Koine Greek has not been independently established. A long question can be truncated (`query_truncated`); shorten and repeat if true. Source mappings, part/heading caveats and edition differences still apply.
+
+The bundled offline runtime requires Python 3.12 on Linux x86-64 with AVX-512 VNNI; first use extracts verified assets and installs bundled wheels to a temporary cache without network. If unavailable or any model/index check fails, say vector search could not be run; fall back to lexical search only if useful and clearly label it. Never claim an embedding search was performed when it was not.
+
 ## Unified search and comparisons
 
 Use the one materialized `$BIBLE_DB` for all Bible texts, mappings, morphology and passage indexes. Identify the user's reference language and source translation. Russian defaults to Synodal, English to KJV, Dutch to Dutch 1917; ask only if the reference is ambiguous. The Dutch source is an old 1917 text, not HSV or NBV21. Convert book names from Russian, English or Dutch, or use USFM book codes.
@@ -40,13 +56,13 @@ python3 "$SKILL_DIR/scripts/unified_search.py" --database "$BIBLE_DB" topic --ru
 
 `compare` navigates **from any included edition to any other** through explicit KJV anchors. Show source and mapped references, inspect all paths, and preserve mapping status, KJV parts and evidence. A different canon, an unrepresented book, or an unresolved reference yields no result; never fill it from memory or guess the same number. WLC published-rule links and equal-reference links are candidates, not universal verse equivalences. Parts and headings can return a full verse for context, and compositions may over-include material; no word-level alignment is implied. For 3 John 1:14 the script filters disjoint checked opening/closing parts. UGNT Revelation 12:18 ↔ KJV 13:1 opening is partial and has a textual variant (he stood vs I stood). In a range, query each verse and deduplicate. `--tokens` supplies Strong identifiers, morphology and Greek lemmas as provided by the source; do not equate a Strong number with a proven meaning.
 
-`search` is literal substring matching within one selected edition; spelling and inflection matter, and Hebrew/Greek/Dutch searches ignore diacritics. For open-ended topical questions in **Russian, English, or Dutch**, analyze the question in its context, formulate several relevant stems and synonyms, and if looking across languages translate the concepts into all three languages. Pass these yourself via repeated `--ru-term`, `--en-term`, `--nl-term`; the script does not translate queries. `topic` uses lexical prefix retrieval over overlapping passages and rank fusion, not embeddings or semantic search. It may miss relevant verses or retrieve irrelevant ones. Evaluate actual text, inspect surrounding context and precise verse references, distinguish direct vs indirect connections, and do not claim completeness. Source and target links are preserved; output passages should cite their translation.
+`search` is literal substring matching within one selected edition; spelling and inflection matter, and Hebrew/Greek/Dutch searches ignore diacritics. For lexical supplementation or if vector search is unavailable, analyze a topical question in its context, formulate relevant stems and synonyms, and if looking across languages translate the concepts into all three languages. Pass these yourself via repeated `--ru-term`, `--en-term`, `--nl-term`; the script does not translate queries. `topic` uses lexical prefix retrieval over overlapping passages and rank fusion, not embeddings or semantic search. It may miss relevant verses or retrieve irrelevant ones. Evaluate actual text, inspect surrounding context and precise verse references, distinguish direct vs indirect connections, and do not claim completeness. Source and target links are preserved; output passages should cite their translation.
 
 The legacy `search.py` and `question_search.py` remain supported with `$BIBLE_DB`; the latter is Russian-only and uses its embedded four-verse passage index.
 
 ## Experimental parent–child topic
 
-For a request about relationships between parents and children, use the experimental thematic prototype before supplementing it with literal searches. Run:
+For a request about relationships between parents and children, supplement the semantic search with the experimental thematic prototype and literal searches. Run:
 
 ```bash
 python3 "$SKILL_DIR/scripts/topic_search.py" --database "$BIBLE_DB" --translation russyn
