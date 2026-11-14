@@ -74,7 +74,7 @@ def search(db,question,languages,limit,terms):
  placeholders=','.join('?' for _ in languages)
  rows=db.execute(f'''SELECT v.passage_id,v.vector FROM semantic_vectors v JOIN semantic_passage p ON p.id=v.passage_id WHERE p.translation IN ({placeholders}) ORDER BY v.passage_id,v.part''',languages).fetchall()
  if not rows:return {'results':[],'warning':'No vector passages in selected sources'}
- matrix=np.vstack([np.frombuffer(r[1],dtype='<f4') for r in rows]);scores=matrix@q
+ matrix=np.vstack([np.frombuffer(r[1],dtype=('<f2' if len(r[1])==768 else '<f4')).astype('float32') for r in rows]);scores=matrix@q
  # Aggregate multiple token chunks by highest similarity for each passage.
  best={}
  for (pid,_),score in zip(rows,scores):
