@@ -22,6 +22,14 @@ def import_archive(archive, output):
                 continue
             result = parse_book(z.read(info), info.filename)
             code = result['book']
+            if code == '1PE':
+                target = next(v for v in result['verses'] if v['chapter'] == 4 and v['verse'] == 3)
+                original = 'похотям мужеложству, скотоложству, помыслам, пьянству'
+                corrected = 'похотям (мужеложству, скотоложству, помыслам), пьянству'
+                if original not in target['text']:
+                    raise ValueError('Unexpected source text at 1 Peter 4:3')
+                target['text'] = target['text'].replace(original, corrected)
+                target['editorial_correction'] = 'Restored explanatory parentheses missing in source archive; raw USFM remains unchanged.'
             if code in books:
                 raise ValueError(f'Duplicate book {code}.')
             books[code] = result
